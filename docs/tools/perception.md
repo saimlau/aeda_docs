@@ -4,14 +4,14 @@ See the world. Vision + grounding tools — Gemini Robotics-ER 1.6 detection, RA
 
 ## In this category
 
-- [`check_target_in_frame`](#check-target-in-frame) — Returns:
-- [`detect_target`](#detect-target) — _(no docstring)_
-- [`estimate_target_visibility`](#estimate-target-visibility) — Returns a dict with confidence + diagnostic flags.
-- [`find_cluster_target`](#find-cluster-target) — _(no docstring)_
-- [`identify_objects_vision`](#identify-objects-vision) — _(no docstring)_
-- [`list_objects_in_view`](#list-objects-in-view) — _(no docstring)_
-- [`scan_room_for_tables`](#scan-room-for-tables) — _(no docstring)_
-- [`score_view_novelty`](#score-view-novelty) — _(no docstring)_
+- [`check_target_in_frame`](#check_target_in_frame) — Returns:
+- [`detect_target`](#detect_target) — _(no docstring)_
+- [`estimate_target_visibility`](#estimate_target_visibility) — Returns a dict with confidence + diagnostic flags.
+- [`find_cluster_target`](#find_cluster_target) — _(no docstring)_
+- [`identify_objects_vision`](#identify_objects_vision) — _(no docstring)_
+- [`list_objects_in_view`](#list_objects_in_view) — _(no docstring)_
+- [`scan_room_for_tables`](#scan_room_for_tables) — _(no docstring)_
+- [`score_view_novelty`](#score_view_novelty) — _(no docstring)_
 
 ---
 

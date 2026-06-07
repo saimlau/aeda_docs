@@ -236,10 +236,7 @@ def write_catalog(tools: list[ExtractedTool]) -> None:
             # quick index
             f.write("## In this category\n\n")
             for t in cat_tools:
-                # MkDocs Material's slugifier lowercases and keeps `_` (Python
-            # identifiers stay intact). Match that exactly so the in-page
-            # links resolve to the auto-generated heading anchors.
-            anchor = t.name.lower()
+                anchor = t.name.lower()
                 f.write(f"- [`{t.name}`](#{anchor}) — "
                         f"{t.summary or '_(no docstring)_'}\n")
             f.write("\n---\n\n")

@@ -4,23 +4,23 @@ Drive the data-collection loop. Spec definition, stop conditions, event log, epi
 
 ## In this category
 
-- [`activate_workspace`](#activate-workspace) — _(no docstring)_
-- [`check_stop_condition`](#check-stop-condition) — _(no docstring)_
-- [`create_data_spec`](#create-data-spec) — _(no docstring)_
-- [`define_workspace`](#define-workspace) — _(no docstring)_
-- [`evaluate_episode`](#evaluate-episode) — _(no docstring)_
-- [`get_collection_status`](#get-collection-status) — _(no docstring)_
-- [`list_workspaces`](#list-workspaces) — _(no docstring)_
-- [`log_event`](#log-event) — _(no docstring)_
-- [`register_labeled_object`](#register-labeled-object) — _(no docstring)_
-- [`register_workspace`](#register-workspace) — _(no docstring)_
-- [`reset_collection_state`](#reset-collection-state) — _(no docstring)_
-- [`select_point_in_workspace`](#select-point-in-workspace) — _(no docstring)_
-- [`store_episode_summary`](#store-episode-summary) — _(no docstring)_
-- [`summarize_data_gaps`](#summarize-data-gaps) — _(no docstring)_
-- [`update_coverage_state`](#update-coverage-state) — _(no docstring)_
-- [`update_data_spec`](#update-data-spec) — _(no docstring)_
-- [`update_target_position`](#update-target-position) — _(no docstring)_
+- [`activate_workspace`](#activate_workspace) — _(no docstring)_
+- [`check_stop_condition`](#check_stop_condition) — _(no docstring)_
+- [`create_data_spec`](#create_data_spec) — _(no docstring)_
+- [`define_workspace`](#define_workspace) — _(no docstring)_
+- [`evaluate_episode`](#evaluate_episode) — _(no docstring)_
+- [`get_collection_status`](#get_collection_status) — _(no docstring)_
+- [`list_workspaces`](#list_workspaces) — _(no docstring)_
+- [`log_event`](#log_event) — _(no docstring)_
+- [`register_labeled_object`](#register_labeled_object) — _(no docstring)_
+- [`register_workspace`](#register_workspace) — _(no docstring)_
+- [`reset_collection_state`](#reset_collection_state) — _(no docstring)_
+- [`select_point_in_workspace`](#select_point_in_workspace) — _(no docstring)_
+- [`store_episode_summary`](#store_episode_summary) — _(no docstring)_
+- [`summarize_data_gaps`](#summarize_data_gaps) — _(no docstring)_
+- [`update_coverage_state`](#update_coverage_state) — _(no docstring)_
+- [`update_data_spec`](#update_data_spec) — _(no docstring)_
+- [`update_target_position`](#update_target_position) — _(no docstring)_
 
 ---
 

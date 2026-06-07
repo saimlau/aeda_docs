@@ -4,11 +4,11 @@ Design camera paths. View-trajectory generators (sphere_orbit, look_away_return,
 
 ## In this category
 
-- [`compute_params_for_base_pose`](#compute-params-for-base-pose) — _(no docstring)_
-- [`compute_parking_locations`](#compute-parking-locations) — _(no docstring)_
-- [`execute_trajectory`](#execute-trajectory) — _(no docstring)_
-- [`find_feasible_params`](#find-feasible-params) — _(no docstring)_
-- [`generate_view_trajectory`](#generate-view-trajectory) — _(no docstring)_
+- [`compute_params_for_base_pose`](#compute_params_for_base_pose) — _(no docstring)_
+- [`compute_parking_locations`](#compute_parking_locations) — _(no docstring)_
+- [`execute_trajectory`](#execute_trajectory) — _(no docstring)_
+- [`find_feasible_params`](#find_feasible_params) — _(no docstring)_
+- [`generate_view_trajectory`](#generate_view_trajectory) — _(no docstring)_
 
 ---
 

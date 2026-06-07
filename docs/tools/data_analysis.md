@@ -4,7 +4,7 @@ Sandbox the data-analyzer subagent uses for ad-hoc Python execution against in-m
 
 ## In this category
 
-- [`python_exec`](#python-exec) — _(no docstring)_
+- [`python_exec`](#python_exec) — _(no docstring)_
 
 ---
 

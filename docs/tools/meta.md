@@ -4,18 +4,18 @@ Tool catalog about itself + supervisor I/O. Notify supervisor, inspect tool sche
 
 ## In this category
 
-- [`analyze_recording`](#analyze-recording) — _(no docstring)_
-- [`append_memory`](#append-memory) — _(no docstring)_
-- [`get_executor_state`](#get-executor-state) — _(no docstring)_
-- [`get_map_snapshot`](#get-map-snapshot) — _(no docstring)_
-- [`get_trajectory_history`](#get-trajectory-history) — _(no docstring)_
-- [`inject_primer_note`](#inject-primer-note) — _(no docstring)_
-- [`notify_supervisor`](#notify-supervisor) — _(no docstring)_
-- [`query_log`](#query-log) — _(no docstring)_
-- [`read_memory`](#read-memory) — _(no docstring)_
-- [`send_executor_command`](#send-executor-command) — _(no docstring)_
-- [`update_memory_index`](#update-memory-index) — _(no docstring)_
-- [`update_plan`](#update-plan) — _(no docstring)_
+- [`analyze_recording`](#analyze_recording) — _(no docstring)_
+- [`append_memory`](#append_memory) — _(no docstring)_
+- [`get_executor_state`](#get_executor_state) — _(no docstring)_
+- [`get_map_snapshot`](#get_map_snapshot) — _(no docstring)_
+- [`get_trajectory_history`](#get_trajectory_history) — _(no docstring)_
+- [`inject_primer_note`](#inject_primer_note) — _(no docstring)_
+- [`notify_supervisor`](#notify_supervisor) — _(no docstring)_
+- [`query_log`](#query_log) — _(no docstring)_
+- [`read_memory`](#read_memory) — _(no docstring)_
+- [`send_executor_command`](#send_executor_command) — _(no docstring)_
+- [`update_memory_index`](#update_memory_index) — _(no docstring)_
+- [`update_plan`](#update_plan) — _(no docstring)_
 
 ---
 

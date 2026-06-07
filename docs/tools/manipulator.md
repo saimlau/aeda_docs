@@ -4,17 +4,17 @@ Move the arm. Relative motion, single-joint rotation, IK + collision-aware whole
 
 ## In this category
 
-- [`check_reachability`](#check-reachability) — _(no docstring)_
-- [`lock_base`](#lock-base) — _(no docstring)_
-- [`move_camera_relative`](#move-camera-relative) — _(no docstring)_
-- [`plan_arm_motion`](#plan-arm-motion) — _(no docstring)_
-- [`prepose_arm_for_view`](#prepose-arm-for-view) — _(no docstring)_
-- [`recover_arm`](#recover-arm) — _(no docstring)_
-- [`reset_arm_to_rest`](#reset-arm-to-rest) — _(no docstring)_
-- [`retime_trajectory`](#retime-trajectory) — _(no docstring)_
-- [`rotate_joint`](#rotate-joint) — _(no docstring)_
-- [`survey_scene_pose`](#survey-scene-pose) — _(no docstring)_
-- [`unlock_base`](#unlock-base) — _(no docstring)_
+- [`check_reachability`](#check_reachability) — _(no docstring)_
+- [`lock_base`](#lock_base) — _(no docstring)_
+- [`move_camera_relative`](#move_camera_relative) — _(no docstring)_
+- [`plan_arm_motion`](#plan_arm_motion) — _(no docstring)_
+- [`prepose_arm_for_view`](#prepose_arm_for_view) — _(no docstring)_
+- [`recover_arm`](#recover_arm) — _(no docstring)_
+- [`reset_arm_to_rest`](#reset_arm_to_rest) — _(no docstring)_
+- [`retime_trajectory`](#retime_trajectory) — _(no docstring)_
+- [`rotate_joint`](#rotate_joint) — _(no docstring)_
+- [`survey_scene_pose`](#survey_scene_pose) — _(no docstring)_
+- [`unlock_base`](#unlock_base) — _(no docstring)_
 
 ---
 

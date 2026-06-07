@@ -4,13 +4,13 @@ Move the base. Nav2-backed `navigate_to`, parking-candidate search, approach hel
 
 ## In this category
 
-- [`choose_collection_site`](#choose-collection-site) — _(no docstring)_
-- [`explore_frontier`](#explore-frontier) — _(no docstring)_
-- [`explore_unvisited`](#explore-unvisited) — _(no docstring)_
-- [`move_relative`](#move-relative) — _(no docstring)_
-- [`navigate_to`](#navigate-to) — _(no docstring)_
+- [`choose_collection_site`](#choose_collection_site) — _(no docstring)_
+- [`explore_frontier`](#explore_frontier) — _(no docstring)_
+- [`explore_unvisited`](#explore_unvisited) — _(no docstring)_
+- [`move_relative`](#move_relative) — _(no docstring)_
+- [`navigate_to`](#navigate_to) — _(no docstring)_
 - [`reposition`](#reposition) — _(no docstring)_
-- [`request_next_view`](#request-next-view) — _(no docstring)_
+- [`request_next_view`](#request_next_view) — _(no docstring)_
 
 ---
 

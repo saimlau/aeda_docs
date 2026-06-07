@@ -4,16 +4,16 @@ Inspect a dataset's distribution. Per-axis analyzers (`analyze_*_distribution`),
 
 ## In this category
 
-- [`analyze_camera_trajectory_distribution`](#analyze-camera-trajectory-distribution) — _(no docstring)_
-- [`analyze_depth_distribution`](#analyze-depth-distribution) — _(no docstring)_
-- [`analyze_intrinsics_distribution`](#analyze-intrinsics-distribution) — _(no docstring)_
-- [`analyze_language_distribution`](#analyze-language-distribution) — _(no docstring)_
-- [`analyze_object_distribution`](#analyze-object-distribution) — _(no docstring)_
-- [`compare_distributions`](#compare-distributions) — _(no docstring)_
-- [`correlate_dimensions`](#correlate-dimensions) — _(no docstring)_
-- [`coverage_report`](#coverage-report) — _(no docstring)_
-- [`describe_distribution`](#describe-distribution) — _(no docstring)_
-- [`inspect_dataset`](#inspect-dataset) — _(no docstring)_
+- [`analyze_camera_trajectory_distribution`](#analyze_camera_trajectory_distribution) — _(no docstring)_
+- [`analyze_depth_distribution`](#analyze_depth_distribution) — _(no docstring)_
+- [`analyze_intrinsics_distribution`](#analyze_intrinsics_distribution) — _(no docstring)_
+- [`analyze_language_distribution`](#analyze_language_distribution) — _(no docstring)_
+- [`analyze_object_distribution`](#analyze_object_distribution) — _(no docstring)_
+- [`compare_distributions`](#compare_distributions) — _(no docstring)_
+- [`correlate_dimensions`](#correlate_dimensions) — _(no docstring)_
+- [`coverage_report`](#coverage_report) — _(no docstring)_
+- [`describe_distribution`](#describe_distribution) — _(no docstring)_
+- [`inspect_dataset`](#inspect_dataset) — _(no docstring)_
 
 ---
 

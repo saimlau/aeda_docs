@@ -4,8 +4,8 @@ Capture episodes. `start_recording` / `stop_recording`, episode evaluation, keep
 
 ## In this category
 
-- [`start_recording`](#start-recording) — _(no docstring)_
-- [`stop_recording`](#stop-recording) — _(no docstring)_
+- [`start_recording`](#start_recording) — _(no docstring)_
+- [`stop_recording`](#stop_recording) — _(no docstring)_
 
 ---
 
