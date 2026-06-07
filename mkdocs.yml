@@ -63,6 +63,23 @@ nav:
       - LLM judgement loop: examples/judgement-loop.md
       - Room scan + collect: examples/room-scan-and-collect.md
       - Scan → cluster → capture: examples/scan-cluster-capture.md
+  - Tool catalog:
+      - All tools (A–Z): tools/index.md
+      - Perception: tools/perception.md
+      - Navigation: tools/navigation.md
+      - Manipulator: tools/manipulator.md
+      - Trajectory: tools/trajectory.md
+      - Recording: tools/recording.md
+      - Collection: tools/collection.md
+      - Data: tools/data.md
+      - Data analysis: tools/data_analysis.md
+      - Meta: tools/meta.md
+  - Modules:
+      - Overview: modules/index.md
+      - Core primitives: modules/core.md
+      - Lower level: modules/lower-level.md
+      - LLM agents: modules/llm.md
+      - Runtime + UI: modules/runtime.md
   - Guides:
       - Writing a tool: guides/writing-a-tool.md
       - Running a script: guides/running-a-script.md

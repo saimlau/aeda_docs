@@ -66,6 +66,14 @@ You're using Aeda whenever you:
 
     Real scripts from the lab — a graded tour from 8 to 389 lines.
 
+- :material-toolbox: **[Tool catalog](tools/index.md)**
+
+    Every `@tool` (73 across 9 categories), auto-extracted from source with docstrings + GitHub links.
+
+- :material-source-branch: **[Modules](modules/index.md)**
+
+    A guided tour of the `modulated_system` repo layout — core, lower_level, llm, runtime.
+
 </div>
 
 ## Source
