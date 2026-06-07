@@ -62,6 +62,10 @@ You're using Aeda whenever you:
 
     Every namespace, what it returns, what it can raise.
 
+- :material-script-text: **[Examples](examples/index.md)**
+
+    Real scripts from the lab — a graded tour from 8 to 389 lines.
+
 </div>
 
 ## Source

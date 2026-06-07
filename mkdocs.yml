@@ -57,6 +57,12 @@ nav:
       - aeda.llm: api/llm.md
       - aeda.workspace: api/workspace.md
       - run_script + RunHandle: api/script.md
+  - Examples:
+      - Overview: examples/index.md
+      - Hello, platform: examples/hello.md
+      - LLM judgement loop: examples/judgement-loop.md
+      - Room scan + collect: examples/room-scan-and-collect.md
+      - Scan → cluster → capture: examples/scan-cluster-capture.md
   - Guides:
       - Writing a tool: guides/writing-a-tool.md
       - Running a script: guides/running-a-script.md
