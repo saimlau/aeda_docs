@@ -84,8 +84,10 @@ class ExtractedTool:
     name: str                       # the `name=` from @tool(...)
     fn_name: str                    # the Python function name
     category: str                   # the `category=` from @tool(...)
-    summary: str                    # first non-blank line of the docstring
-    docstring: str                  # full docstring (cleaned)
+    summary: str                    # first non-blank line of description
+    description: str                # decorator `description=` (or docstring)
+    description_source: str         # "decorator" | "docstring" | "none"
+    parameters: Optional[dict]      # decorator `parameters=` dict, if present
     source_path: str                # path relative to modulated_system root
     line: int                       # 1-based line of the @tool decorator
 
@@ -98,6 +100,28 @@ def first_sentence(text: str) -> str:
     line = re.split(r"\n\s*\n", text)[0]
     line = " ".join(line.split())
     return line
+
+
+# Match `[text](something.md)` patterns where the link target ISN'T an
+# absolute URL or anchor. These appear inside tool descriptions when the
+# author is showing the agent a literal markdown EXAMPLE (e.g. the
+# convention for MEMORY.md index entries) — not a real link. MkDocs
+# tries to resolve them as relative paths against the catalog page, which
+# fails. Wrap them in backticks so they render verbatim.
+_RELATIVE_LINK_RE = re.compile(
+    r"\[([^\]]+)\]\(((?!https?://|/|#)[^)]*\.(?:md|json|yaml|yml|py|txt))\)"
+)
+
+
+def neutralize_example_links(text: str) -> str:
+    """Convert `[text](relative.md)` → `` `[text](relative.md)` ``.
+
+    Preserves real links (http(s)://…, absolute /…, anchors #…) — only
+    relative file references get code-wrapped. Idempotent: re-running
+    on an already-wrapped string is a no-op (the regex doesn't match
+    inside an existing backtick span).
+    """
+    return _RELATIVE_LINK_RE.sub(r"`[\1](\2)`", text)
 
 
 def extract_tool_kwargs(call: ast.Call) -> dict:
@@ -144,12 +168,37 @@ def find_tools_in_file(path: pathlib.Path, source_root: pathlib.Path
             else:
                 continue
             doc = ast.get_docstring(node, clean=True) or ""
+            # The tool authors put the actual prose in the decorator's
+            # `description=` kwarg (it's what the LLM agents and the
+            # `aeda.tools.schema(name)` runtime introspection read), so
+            # prefer the function docstring if present, otherwise fall
+            # back to the decorator description. The `parameters=` dict
+            # gives per-arg docs.
+            deco_desc_raw = kw.get("description", "") or ""
+            deco_desc = (
+                deco_desc_raw if isinstance(deco_desc_raw, str)
+                else str(deco_desc_raw)
+            )
+            params = kw.get("parameters")
+            if not isinstance(params, dict):
+                params = None
+            if doc.strip():
+                desc = neutralize_example_links(doc)
+                desc_source = "docstring"
+            elif deco_desc.strip():
+                desc = neutralize_example_links(deco_desc)
+                desc_source = "decorator"
+            else:
+                desc = ""
+                desc_source = "none"
             found.append(ExtractedTool(
                 name=kw.get("name", node.name),
                 fn_name=node.name,
                 category=kw.get("category", "(uncategorized)"),
-                summary=first_sentence(doc),
-                docstring=doc,
+                summary=first_sentence(desc),
+                description=desc,
+                description_source=desc_source,
+                parameters=params,
                 source_path=rel,
                 line=deco.lineno,
             ))
@@ -201,11 +250,28 @@ def write_catalog(tools: list[ExtractedTool]) -> None:
             "[`scripts/regenerate_tool_catalog.py`](https://github.com/saimlau/aeda_docs/blob/main/scripts/regenerate_tool_catalog.py) "
             "— re-run after upstream changes.\n\n"
         )
+        n_doc = sum(1 for t in tools
+                    if t.description_source == "docstring")
+        n_deco = sum(1 for t in tools
+                     if t.description_source == "decorator")
+        n_none = sum(1 for t in tools
+                     if t.description_source == "none")
         f.write(
             f"**{len(tools)} tools** across "
             f"**{len(by_cat)} categories**. The category pages "
             "(see the nav) group them with prose context; this page is the "
             "flat alphabetical view.\n\n"
+        )
+        f.write(
+            "**Where descriptions come from:** "
+            f"**{n_doc}** have Python `\"\"\"docstrings\"\"\"`, "
+            f"**{n_deco}** use the `@tool(description=...)` decorator "
+            "field (what the LLM agents and "
+            "`aeda.tools.schema(name)` read at runtime), "
+            f"**{n_none}** have neither. The extractor falls back to "
+            "the decorator description when no docstring is present, so "
+            f"**{n_doc + n_deco} / {len(tools)}** tools appear with a "
+            "full description below.\n\n"
         )
         f.write("| Tool | Category | Summary |\n")
         f.write("|---|---|---|\n")
@@ -243,20 +309,59 @@ def write_catalog(tools: list[ExtractedTool]) -> None:
             # full entry per tool
             for t in cat_tools:
                 f.write(f"## `{t.name}`\n\n")
+                src_note = {
+                    "docstring": "function docstring",
+                    "decorator": "decorator `description=`",
+                    "none": "no description",
+                }[t.description_source]
                 f.write(
                     f"**Module:** "
                     f"[`modulated_system/{t.source_path}`]"
                     f"({github_url(t.source_path, t.line)})  ·  "
-                    f"**Python function:** `{t.fn_name}`\n\n"
+                    f"**Python function:** `{t.fn_name}`  ·  "
+                    f"**Description source:** {src_note}\n\n"
                 )
-                if t.docstring.strip():
-                    # Wrap the docstring in a quoted block so MkDocs
-                    # renders it verbatim (preserves bullet lists,
-                    # code spans, etc.) without trying to interpret
-                    # nested markdown control characters.
-                    f.write(t.docstring.rstrip() + "\n\n")
+                if t.description.strip():
+                    f.write(t.description.rstrip() + "\n\n")
                 else:
-                    f.write("_No docstring._\n\n")
+                    f.write(
+                        "_No description in source. The `@tool` "
+                        "decorator on this function has no "
+                        "`description=` and the function has no "
+                        "docstring._\n\n"
+                    )
+                # Parameters table
+                if t.parameters:
+                    f.write("### Parameters\n\n")
+                    f.write("| Name | Type | Required | Default | "
+                            "Description |\n")
+                    f.write("|------|------|----------|---------|"
+                            "-------------|\n")
+                    for pname, pspec in t.parameters.items():
+                        if not isinstance(pspec, dict):
+                            f.write(f"| `{pname}` | — | — | — | "
+                                    f"`{pspec}` |\n")
+                            continue
+                        ptype = pspec.get("type", "—")
+                        req = (
+                            "✓" if pspec.get("required")
+                            else "—"
+                        )
+                        default = pspec.get("default", "—")
+                        if default == "—":
+                            default_s = "—"
+                        else:
+                            default_s = f"`{default!r}`"
+                        pdoc = pspec.get("doc", "") or ""
+                        # Single line; collapse runs of whitespace.
+                        pdoc = " ".join(str(pdoc).split())
+                        # Escape pipes so they don't break the table.
+                        pdoc = pdoc.replace("|", "¦")
+                        f.write(
+                            f"| `{pname}` | `{ptype}` | {req} | "
+                            f"{default_s} | {pdoc} |\n"
+                        )
+                    f.write("\n")
                 f.write("---\n\n")
 
 
