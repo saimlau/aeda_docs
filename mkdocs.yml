@@ -2,7 +2,7 @@ site_name: Aeda
 site_description: >-
   The robot-scripting SDK that powers the modulated_system supervisor/worker
   loop in TidyROS.
-site_url: https://saimlau.github.io/aeda_docs/
+site_url: https://saimailau.com/aeda_docs/
 repo_url: https://github.com/saimlau/aeda_docs
 repo_name: saimlau/aeda_docs
 edit_uri: edit/main/docs/
