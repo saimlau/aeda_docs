@@ -14,6 +14,14 @@ concurrency:
   group: pages
   cancel-in-progress: false
 
+env:
+  # Opt in to the Node.js 24 runtime for first-party JS actions now,
+  # rather than waiting for the 2026-06-16 forced migration. Silences
+  # the Node 20 deprecation warning and matches what we'll be running
+  # anyway. See:
+  # https://github.blog/changelog/2025-09-19-deprecation-of-node-20-on-github-actions-runners/
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: "true"
+
 jobs:
   build:
     runs-on: ubuntu-latest
