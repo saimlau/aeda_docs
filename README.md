@@ -34,4 +34,4 @@ Open a PR against `main`. The deploy workflow rebuilds and publishes on merge.
 
 ## License
 
-TBD.
+Apache-2.0 — see [`LICENSE`](LICENSE).

@@ -54,7 +54,9 @@ nav:
       - aeda.tools: api/tools.md
       - aeda.frame: api/frame.md
       - aeda.platform / log / cancel: api/platform.md
-      - run_script + AedaInterrupt: api/script.md
+      - aeda.llm: api/llm.md
+      - aeda.workspace: api/workspace.md
+      - run_script + RunHandle: api/script.md
   - Guides:
       - Writing a tool: guides/writing-a-tool.md
       - Running a script: guides/running-a-script.md
@@ -94,4 +96,4 @@ extra:
       name: This documentation site
 
 copyright: >
-  TidyROS / Stanford IPRL — documentation license TBD.
+  © 2026 TidyROS contributors — documentation licensed under Apache-2.0.

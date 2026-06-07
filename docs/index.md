@@ -14,18 +14,24 @@ underlying control + perception stack.
 
 ## What's in the box
 
-- **`aeda.tools.*`** — every registered `@tool` (motion primitives, perception
-  calls, trajectory generators, recording controls). One catalog, one
-  entry point.
-- **`aeda.frame.*`** — a read-only snapshot of the latest sensor frame: RGB,
-  depth, camera pose, base pose. Scripts read it; they never block on it.
-- **`aeda.cancel.check()`** + **`aeda.AedaInterrupt`** — cooperative
-  cancellation. Operators raise (Ctrl-C, e-stop, supervisor abort); scripts
-  surface.
-- **`aeda.log()`** — structured logging into the runtime session directory.
-- **`aeda.platform`** — read-only environment info (sim vs real, robot
-  configuration, session id).
-- **`run_script(code: str)`** — the tool the worker calls to execute a script.
+- **`aeda.tools.*`** — every registered `@tool` on the platform (motion,
+  perception, trajectory generation, recording). Dispatched by attribute
+  access; capability-filtered.
+- **`aeda.frame.*`** — live sensor view: `rgb`, `depth`, `intrinsics`,
+  `timestamp`, `camera_pose`, `robot_pose`. Every read is fresh (no caching)
+  and is a cancel checkpoint.
+- **`aeda.llm.*`** — Gemini-mediated decisions: `judgement`, `ask`,
+  `extract_json`, `decide_next_tool`. Strongly-typed return values.
+- **`aeda.workspace.*`** — introspect + mutate the runtime UI's workspace
+  panel from a script.
+- **`aeda.platform`** — escape hatch: the live `Robot` + `capabilities`
+  frozenset for things no `@tool` exposes.
+- **`aeda.log()`** — structured logging (`kind="info" | "json" | "image" | "error"`).
+- **`aeda.cancel.check()` / `is_set()`** + **`aeda.AedaInterrupt`** —
+  cooperative cancellation. `AedaInterrupt` inherits from `BaseException`
+  so a stray `except Exception:` can't swallow it.
+- **`run_script(script_text, ctx)`** — the runtime entry point. Returns a
+  `RunHandle` for `halt()` / `wait()`.
 
 ## When you're using it
 

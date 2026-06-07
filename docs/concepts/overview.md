@@ -12,11 +12,13 @@ read-only objects plus one effect surface:
 
 | Symbol | Kind | Purpose |
 | --- | --- | --- |
-| `aeda.tools` | namespace | All `@tool`-registered functions (motion, perception, recording, …) |
-| `aeda.frame` | snapshot | Latest RGB / depth / camera pose / base pose |
-| `aeda.platform` | snapshot | Sim vs real, robot config, capability flags, session id |
-| `aeda.log` | function | Structured logging into the session dir |
-| `aeda.cancel.check()` | function | Raises `AedaInterrupt` if the operator cancelled |
+| `aeda.tools` | dispatcher | Every registered `@tool` (motion, perception, recording, …). |
+| `aeda.frame` | live view | Fresh RGB / depth / intrinsics / timestamp / `camera_pose` / `robot_pose` on every read. |
+| `aeda.llm` | facade | Gemini-mediated `judgement`, `ask`, `extract_json`, `decide_next_tool`. Optional (placeholder when no API key). |
+| `aeda.workspace` | facade | Read + mutate the UI workspace panel from inside the script. |
+| `aeda.platform` | escape hatch | The live `Robot` + capability set, for things no `@tool` exposes. |
+| `aeda.log` | function | Structured event: `kind="info" \| "json" \| "image" \| "error"`. |
+| `aeda.cancel.check()` / `.is_set()` | functions | Raise `AedaInterrupt` (or query) when the operator has cancelled. |
 
 That's it. No imports, no globals to thread through, no client objects to
 construct. A script is the smallest unit of work the system runs.

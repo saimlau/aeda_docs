@@ -1,83 +1,111 @@
 # `aeda.tools`
 
-`aeda.tools` is the entry point to every registered `@tool` in
-`modulated_system`. Each tool is a Python function decorated with `@tool`
-that gets surfaced into `aeda.tools.<name>` and (in parallel) into the
-supervisor's tool catalog.
+`aeda.tools` is the entry point to every registered tool on this platform.
+Each tool is dispatched through the same `ToolRegistry.dispatch` that the
+HTTP `/api/tools/{name}/run` route uses — capability filtering, parameter
+resolution, and audit logging all behave identically.
 
-!!! note "Signatures here are illustrative"
-    The catalog and signatures below are a hand-curated overview. The
-    canonical definitions live in the source tree at
-    [`modulated_system/tools/`](https://github.com/Pengyu-Mo/tidyros_iphone/tree/main/modulated_system/tools).
-
-## Calling a tool
+## Dispatch — three forms
 
 ```python
-res = aeda.tools.move_camera_relative(
-    dx=0.0, dy=0.0, dz=0.05, speed_factor=0.10,
-)
+# 1. Attribute access (canonical).
+res = aeda.tools.detect_target(target_object_hint="red mug")
+
+# 2. By computed name (when the name comes from data).
+name = pick_next_tool()
+res = aeda.tools.execute(name, target_object_hint="red mug")
+
+# 3. The name argument is positional-only — tools whose own kwargs include
+#    `name=` (e.g. register_labeled_object) don't collide:
+res = aeda.tools.execute("register_labeled_object", name="mug_a")
 ```
 
-Tools return a `ToolResult`: a structured object with at minimum
-`success: bool` + `message: str`, plus a tool-specific `data` payload.
+!!! warning "kwargs only"
+    Tools take **only keyword arguments**. Passing a positional arg raises
+    `TypeError: tool 'X' only accepts keyword args; got positional (...)`.
 
-## The `@tool` contract
+## Catalog introspection
 
-Every tool registered with `@tool`:
+```python
+aeda.tools.list()              # -> sorted list[str] of every available tool
+aeda.tools.schema("detect_target")
+# -> {"name": "...", "params": [...], "category": "...", "ui_hints": {...}}
+```
 
-- **Takes a `ToolContext`** as its first arg (the bridge to the session,
-  sensor fuser, planner clients).
-- **Returns a `ToolResult`** with at least `success: bool` and `message: str`.
-- **Logs side effects** to the session directory.
-- **Doesn't raise** on expected failure modes — returns
-  `success=False` plus a remediation hint instead (except for
-  `AedaInterrupt`, which always propagates).
+`list()` reflects the **live** registry — a tool loaded mid-run is visible
+on the next call. Capability filtering is respected: if the platform
+doesn't expose `manipulator.move_relative` the tool isn't listed.
 
-See **[Guides: writing a tool](../guides/writing-a-tool.md)** for the full
-walkthrough.
+## What dispatch emits
 
-## Catalog (illustrative)
+Every call produces two events on the per-script event stream:
 
-### Motion
+```
+{"type": "tool_call_started",  "name": "...", "args": {...},
+ "category": "...", "timestamp_unix": ...}
 
-- `navigate_to(x, y, theta, ...)` — base navigation via Nav2.
-- `move_camera_relative(dx, dy, dz, drx, dry, drz, speed_factor)` — arm IK
-  hop to a relative camera pose.
-- `rotate_joint(joint_idx, target_rad, speed_factor)` — single-joint
-  absolute rotation (FR3 j0–j6).
-- `execute_trajectory(waypoints, ...)` — whole-body trajectory execution.
-- `recover_arm()` — re-arm after a brake / reflex event.
+{"type": "tool_call_finished", "name": "...",
+ "result": <summarized>, "error": null|"...",
+ "latency_s": 0.123, "timestamp_unix": ...}
+```
 
-### Trajectory generators
+The result is JSON-summarized for the transcript (dicts trimmed to ≤16
+keys, strings truncated past 240 chars). The script still receives the
+**full** unsummarized return value.
 
-- `generate_view_trajectory(trajectory_type, target_x, target_y, target_z,
-  generator_params)` — builds a camera path (sphere_orbit,
-  look_away_return, bezier, …).
-- `compute_parking_locations(target_x, target_y, ...)` — base parking
-  candidates around a target, base-collision-aware.
-- `find_feasible_params(trajectory_type, target_xyz, ...)` — IK-feasible
-  parameter search.
+## Return values
 
-### Perception
+A tool returns whatever its underlying implementation returns — most
+return a dict, but some return a `ToolResult` or a domain-specific type
+(`generate_view_trajectory` returns a trajectory object, `detect_target`
+returns a detection dict, etc.). Inspect the tool's schema or source for
+the canonical shape:
 
-- `detect_target(hint)` — Gemini Robotics-ER 1.6 detection: 2D point +
-  bbox + confidence.
-- `check_target_in_frame(hint)` — fast vision presence check.
+```python
+schema = aeda.tools.schema("detect_target")
+aeda.log(schema, kind="json")
+```
 
-### Recording
+## Missing-tool errors
 
-- `start_recording(target_object_id, ...)` — begin an episode.
-- `stop_recording(...)` — end + persist an episode.
-- `evaluate_episode(episode_id, ...)` — score an episode against the data
-  spec.
+Attribute access for an unknown name raises `AttributeError` with a
+helpful hint:
 
-### Memory / state
+```
+AttributeError: no tool named 'navigate_too' on this platform.
+Available: ['detect_target', 'evaluate_episode', 'execute_trajectory',
+            'find_feasible_params', 'generate_view_trajectory', ...]…
+```
 
-- `set_data_spec(...)`, `reset_collection_state()`, `reset_memory()`.
+This is the same error a typo on any Python attribute would raise — your
+script's `try/except` can handle it naturally.
+
+## The `@tool` contract (for tool authors)
+
+Each tool implementation is a Python function decorated with `@tool`,
+takes a `ToolContext` as its first arg, and returns a JSON-serializable
+result. See **[Guides: writing a tool](../guides/writing-a-tool.md)** for
+the full walkthrough.
+
+## Illustrative catalog
+
+The canonical list is whatever `aeda.tools.list()` returns at runtime. As
+a rough orientation:
+
+- **Motion** — `navigate_to`, `move_camera_relative`, `rotate_joint`,
+  `execute_trajectory`, `recover_arm`.
+- **Trajectory generators** — `generate_view_trajectory`,
+  `compute_parking_locations`, `find_feasible_params`.
+- **Perception** — `detect_target`, `check_target_in_frame`.
+- **Recording** — `start_recording`, `stop_recording`, `evaluate_episode`.
+- **Memory / state** — `set_data_spec`, `reset_collection_state`,
+  `reset_memory`.
 
 ## Source
 
-- Tool registration:
-  [`modulated_system/runtime/ui/aeda_sdk/`](https://github.com/Pengyu-Mo/tidyros_iphone/tree/main/modulated_system/runtime/ui/aeda_sdk)
-- Tool implementations:
-  [`modulated_system/tools/`](https://github.com/Pengyu-Mo/tidyros_iphone/tree/main/modulated_system/tools)
+- [`runtime/ui/aeda_sdk/tools.py`](https://github.com/Pengyu-Mo/tidyros_iphone/blob/main/modulated_system/runtime/ui/aeda_sdk/tools.py)
+  — the `Tools` facade.
+- [`core/tool_contract.py`](https://github.com/Pengyu-Mo/tidyros_iphone/blob/main/core/tool_contract.py)
+  — `ToolRegistry`, `ToolContext`, `@tool`.
+- [`modulated_system/tools/`](https://github.com/Pengyu-Mo/tidyros_iphone/tree/main/modulated_system/tools)
+  — every registered tool implementation.

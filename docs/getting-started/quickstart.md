@@ -25,25 +25,29 @@ Save this as `quick.py`:
 
 ```python
 # quick.py — first Aeda script
-aeda.log("starting quickstart", kind="info")
+aeda.log("starting quickstart")
 
-# Read the LATEST camera pose. None-guard — the fuser may not have a frame yet.
+# Read the live camera pose. None-guard: the TF chain may not be ready yet,
+# or it may have fallen back to the iphone_world frame (in which case
+# camera_pose intentionally returns None to keep you from planning against
+# wrong world coords).
 cp = aeda.frame.camera_pose
 if cp is None:
-    raise SystemExit("no camera frame yet — is the sim running?")
+    raise SystemExit("no camera_pose yet — is the sim running, TF up?")
 
-aeda.log(
-    f"camera at xyz=("
-    f"{cp.position.x:.3f}, {cp.position.y:.3f}, {cp.position.z:.3f})"
-)
+# Pose is a flat dataclass — .x/.y/.z/.qx/.qy/.qz/.qw/.frame/.yaw, plus
+# .to_xy_theta(). NOT nested .position.x.
+aeda.log(f"camera at ({cp.x:.3f}, {cp.y:.3f}, {cp.z:.3f}) in {cp.frame}")
 
-# Nudge the camera 5 cm up. move_camera_relative is one of the @tools
-# registered in modulated_system; aeda.tools surfaces them all.
+# Nudge the camera 5 cm up. move_camera_relative is a registered @tool;
+# aeda.tools dispatches by attribute access and only accepts kwargs.
 res = aeda.tools.move_camera_relative(dz=0.05, speed_factor=0.10)
-aeda.log(f"move result: {res}")
+aeda.log({"move_result": res}, kind="json")
 
-aeda.cancel.check()   # respect operator interrupt
-aeda.log("done", kind="info")
+# Most scripts don't need this — every aeda.* call already does cancel.check()
+# on entry. Useful inside tight pure-Python loops that do no aeda work.
+aeda.cancel.check()
+aeda.log("done")
 ```
 
 ## 3. Run it
