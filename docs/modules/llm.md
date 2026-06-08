@@ -67,6 +67,62 @@ Both conditions hold for the current REPL architecture, which is why
 the session-stats report shows ~93 % cache-read on the cached runs vs
 0 % on the older uncached ones.
 
+### Why this needed our code in the first place
+
+Caching looks the same to a user — *"identical prefix gets discounted on
+the next call"* — but the three big providers differ sharply on whether
+you have to ask for it. Anthropic is the only one of the three where you
+have to opt in:
+
+| Capability | **Anthropic Claude** | **OpenAI** (`gpt-4o`+) | **Google Gemini** (2.5+) |
+| --- | --- | --- | --- |
+| **Default behaviour** | **Opt-in.** No `cache_control` ⇒ no caching, no matter how long the prefix. | **Automatic.** No code changes required. | **Automatic** *implicit* caching, **plus** an optional explicit `CachedContent` API. |
+| **Where to mark** | `cache_control: {"type": "ephemeral"}` on up to **4** content blocks per request. | Nothing — automatic prefix matching. Optional `prompt_cache_key` to influence routing. | Nothing for implicit. Explicit caches are first-class API objects. |
+| **Minimum cacheable prefix** | **1,024 tokens** (Opus/Sonnet 4.x), **4,096 tokens** (Haiku 4.5). | **1,024 tokens.** | **1,024 tokens** (Flash), **4,096 tokens** (Pro). |
+| **Default TTL** | **5 minutes.** Optional 1-hour tier at a higher write cost. | **5–10 minutes** of inactivity, up to ~1 hour total. Extended-retention tier reaches 24 h. | Implicit cache: not specified (best-effort). Explicit cache: caller-set, billed per token-hour of storage. |
+| **Cache *write* cost** | **1.25× input** (5 min tier) or **2× input** (1 hour tier). | **No extra fee.** | Implicit: no extra fee. Explicit: token-hour storage charge. |
+| **Cache *read* discount** | **90 %** off input rate (cache_read = 0.1× input). | OpenAI docs cite *"up to 90 %"* input-cost reduction. (Actual per-model rate varies — `gpt-4o`-family discounted ~50 %, newer `o`-series higher.) | Discount applied automatically on a hit, but **no cost-saving guarantee** on implicit hits. |
+| **Match semantics** | **Exact** prefix hash up to and including the marked block — one character invalidates. | **Exact** prefix match. | **Exact** prefix match; prefix-position matters (put long common content **first**). |
+| **No-hit failure mode** | Silent — under-threshold writes are processed *without* caching, no error. | Silent — under-threshold prompts simply aren't eligible. | Silent — implicit hits aren't guaranteed even when eligible. |
+
+The practical implication: **on OpenAI and Gemini you'd have got a
+substantial cost cut for free** the moment the supervisor crossed 1,024
+tokens of stable prefix. On Anthropic, an un-decorated long conversation
+re-bills the full prefix at full input rate every turn — which is exactly
+what produced the historical incident the [session-stats
+report](https://github.com/saimlau/aeda_docs/blob/main/docs/modules/llm.md)
+documents: 317 M input tokens / **$1,600** burned by one un-cached
+supervisor PRE-slice before `_call_claude` learned to mark its
+breakpoints.
+
+### Why the manual model isn't just a tax — it's also more powerful
+
+The flip side of having to ask: once you do, Anthropic gives you finer
+levers than the other two.
+
+- **Four breakpoints lets you cache stable layers separately from a
+  growing message tail.** `_call_claude` uses three of them — system,
+  tools, and the last 2 messages — so the tools block survives a system-
+  prompt edit, and a growing turn-tail still hits cache up to the most
+  recent marker.
+- **A 1-hour TTL tier exists** at 2× write cost (vs 1.25× for 5 min) —
+  worth it for a session that idles between operator interventions but
+  resumes on the same prefix.
+- **You see the hit ratio directly.** Every `messages.create` response
+  carries `cache_creation_input_tokens` and `cache_read_input_tokens` —
+  the catalog of `cot/_summary.json`'s per-call `cache_creation` /
+  `cache_read` fields. OpenAI surfaces a cached-token count too; Gemini
+  exposes `cached_content_token_count` (which is **0 on every one of our
+  Robotics-ER 1.6 calls** — see the
+  [cost-incident memory](https://github.com/Pengyu-Mo/tidyros_iphone/)
+  for why image-dominated perception calls structurally can't hit
+  Gemini's implicit cache).
+
+So the right summary is: **Anthropic trades convenience for control.**
+That trade only stings when an application doesn't know to opt in — and
+the function of `_call_claude` is precisely to make sure every call in
+the modulated stack opts in correctly, by default, in one place.
+
 ## Source
 
 [`modulated_system/llm/`](https://github.com/Pengyu-Mo/tidyros_iphone/tree/main/modulated_system/llm)
